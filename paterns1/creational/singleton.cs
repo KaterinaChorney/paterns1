@@ -1,12 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace paterns1.creational
 {
-    internal class singleton
+    internal sealed class BakeryManager
     {
+        private static BakeryManager _instance;
+        private BakeryManager() { }
+        public static BakeryManager GetInstance()
+        {
+            if (_instance == null)
+            {
+                _instance = new BakeryManager();
+            }
+            return _instance;
+        }
+        public void ManageBakery()
+        {
+            Console.WriteLine("The pastry shop works!");
+        }
     }
 }

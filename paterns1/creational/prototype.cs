@@ -1,12 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace paterns1.creational
 {
-    internal class prototype
+    public interface ICookiesPrototype
     {
+        ICookiesPrototype Clone();
+        void Show();
+    }
+    public class Cookies : ICookiesPrototype
+    {
+        public string Name { get; set; }
+        public string Layers { get; set; }
+        public string Filling { get; set; }
+        public string Decoration { get; set; }
+
+        public Cookies(string name, string layers, string filling, string decoration)
+        {
+            Name = name;
+            Layers = layers;
+            Filling = filling;
+            Decoration = decoration;
+        }
+        public ICookiesPrototype Clone()
+        {
+            return new Cookies(Name, Layers, Filling, Decoration);
+        }
+        public void Show()
+        {
+            Console.WriteLine($"Cookies \"{Name}\": {Layers}, {Filling}, {Decoration}");
+        }
     }
 }
