@@ -15,7 +15,7 @@ namespace paterns1.structural
     {
         public void ShowOrder()
         {
-            Console.WriteLine("Your regular order: Tiramisu cake and coffee");
+            Console.WriteLine("Your regular order: Tiramisu cake and coffee ");
         }
     }
 
