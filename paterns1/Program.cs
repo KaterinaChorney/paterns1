@@ -66,5 +66,50 @@ class Program
         Baking roll = new CinnamonRoll(new RollRecipe());
         TiramisuCake.Make();
         roll.Make();
+
+        Console.WriteLine("\n    Composite     ");
+        IDessertItem cupcake = new SingleDessert("Сhocolate cupcake", 90m);
+        IDessertItem eclair = new SingleDessert("Eclair with vanilla cream", 70m);
+        IDessertItem croissantItem = new SingleDessert("Croissant with jam", 50m);
+        DessertBox box = new DessertBox("Sweet set");
+        box.Add(cupcake);
+        box.Add(eclair);
+        box.Add(croissantItem);
+        box.GetInformation();
+
+        Console.WriteLine("\n    Decorator    ");
+        IDessert sweetcake = new SpongeCake();
+        Console.WriteLine($"{sweetcake.GetDescription()} - {sweetcake.GetPrice()}UAH");
+        sweetcake = new IcingDecorator(sweetcake);
+        sweetcake = new SprinklesDecorator(sweetcake);
+        sweetcake = new TextDecorator(sweetcake);
+        Console.WriteLine($"{sweetcake.GetDescription()} - {sweetcake.GetPrice()}UAH");
+        Console.WriteLine();
+
+        Console.WriteLine("\n    Facade    ");
+        BakeryFacade bakery = new BakeryFacade();
+        bakery.MakeCake();
+
+        Console.WriteLine("\n    Flyweight    ");
+        DonutFactory factory = new DonutFactory();
+        var chocoType = factory.GetDonutType( "chocolate", "nut paste");
+        var berryType1 = factory.GetDonutType("strawberry", "strawberry jam");
+        var berryType2= factory.GetDonutType("bilberry", "bilberry jam");
+        var chocoTypeAgain = factory.GetDonutType("chocolate", "nut paste");
+        var d1 = new Donut(chocoType, "showcase 1");
+        var d2 = new Donut(berryType1, "showcase 2");
+        var d3 = new Donut(berryType2, "showcase 3");
+        var d4 = new Donut(chocoTypeAgain, "cold room");
+        d1.Display();
+        d2.Display();
+        d3.Display();
+        d4.Display();
+
+        Console.WriteLine("\n    Proxy    ");
+        IOrderAccess client1 = new OrderProxy("Kate");
+        client1.ShowOrder();
+        IOrderAccess client2 = new OrderProxy("Ivan");
+        client2.ShowOrder();
+
     }
 }
