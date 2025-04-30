@@ -1,7 +1,7 @@
 ﻿using System;
+using paterns1.behavioral;
 using paterns1.creational;
 using paterns1.structural;
-
 class Program
 {
     static void Main(string[] args)
@@ -92,9 +92,9 @@ class Program
 
         Console.WriteLine("\n    Flyweight    ");
         DonutFactory factory = new DonutFactory();
-        var chocoType = factory.GetDonutType( "chocolate", "nut paste");
+        var chocoType = factory.GetDonutType("chocolate", "nut paste");
         var berryType1 = factory.GetDonutType("strawberry", "strawberry jam");
-        var berryType2= factory.GetDonutType("bilberry", "bilberry jam");
+        var berryType2 = factory.GetDonutType("bilberry", "bilberry jam");
         var chocoTypeAgain = factory.GetDonutType("chocolate", "nut paste");
         var d1 = new Donut(chocoType, "showcase 1");
         var d2 = new Donut(berryType1, "showcase 2");
@@ -111,5 +111,99 @@ class Program
         IOrderAccess client2 = new OrderProxy("Ivan");
         client2.ShowOrder();
 
+        Console.WriteLine("\n    Clain of responsibility    ");
+        var waiter2 = new WaiterHandler();
+        var chef = new ChefHandler();
+        var manager = new ManagerHandler();
+        waiter2.SetNext(chef);
+        chef.SetNext(manager);
+        waiter2.HandleOrder("latte");
+        Console.WriteLine();
+        waiter2.HandleOrder("eclair with vanilla cream");
+        Console.WriteLine();
+        waiter2.HandleOrder("5-tier wedding cake with delivery");
+
+        Console.WriteLine("=== Патерн Команда ===\n");
+        /*
+        Kitchen kitchen = new Kitchen();
+        Waiter waiter = new Waiter();
+
+        // Клієнти роблять замовлення
+        ICommand order1 = new CakeOrderCommand(kitchen, "Шоколадний");
+        ICommand order2 = new CroissantOrderCommand(kitchen, "Ванільний крем");
+
+        waiter.TakeOrder(order1);
+        waiter.TakeOrder(order2);
+
+        // Офіціант передає всі замовлення на кухню
+        waiter.PlaceOrders();
+        */
+
+
+
+        DessertMenuCustom menu = new DessertMenuCustom();
+        menu.AddDessert(new Dessert("Наполеон", 90));
+        menu.AddDessert(new Dessert("Тірамісу", 110));
+        menu.AddDessert(new Dessert("Круасан з шоколадом", 75));
+
+        IDessertIterator iterator = menu.CreateIterator();
+
+        Console.WriteLine("Меню десертів:");
+        while (iterator.HasNext())
+        {
+            Dessert d = iterator.Next();
+            d.Display();
+        }
+
+        /*
+
+        Bakery bakery = new Bakery();
+
+        ICustomer alice = new RegularCustomer("Аліса");
+        ICustomer bob = new RegularCustomer("Боб");
+
+        bakery.Subscribe(alice);
+        bakery.Subscribe(bob);
+
+        bakery.AddNewDessert("Макарони з малиною");
+        bakery.AddNewDessert("Чізкейк з лохиною");
+
+        bakery.Unsubscribe(bob);
+        bakery.AddNewDessert("Еклер з кремом патіссьє");
+*/
+
+
+
+
+/*
+        OrderMediator mediator = new OrderMediator();
+
+        Client client = new Client("Оля");
+        Waiter waiter = new Waiter("Андрій");
+        Chef chef = new Chef("Ірина");
+
+        client.SetMediator(mediator);
+        waiter.SetMediator(mediator);
+        chef.SetMediator(mediator);
+
+        client.MakeOrder("торт 'Прага'");
+
+*/
+
+
+
+        Order order = new Order();
+        OrderHistory history = new OrderHistory();
+
+        order.AddItem("Торт Наполеон");
+        order.AddItem("Круасан з мигдалем");
+        history.Save(order); // зберегли стан
+
+        order.AddItem("Тістечко Еклер");
+        order.ShowItems();
+
+        Console.WriteLine("\n— Відкат замовлення —");
+        history.Undo(order); // відновлюємо попередній стан
+        order.ShowItems();
     }
 }
