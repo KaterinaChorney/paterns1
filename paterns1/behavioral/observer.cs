@@ -58,7 +58,7 @@ namespace paterns1.behavioral
 
         public void Update(string dessertName)
         {
-            Console.WriteLine($"{_name} received a notification about the new product: {dessertName}");
+            Console.WriteLine($"{_name} received a notification about the new product '{dessertName}'");
         }
     }
 }

@@ -1,96 +1,73 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace paterns1.behavioral
 {
-    interface IMediator
+    public interface IMediator
     {
-        void Send(string message, Participant sender);
-        void Register(Participant participant);
+        void Send(string message, IColleague sender);
     }
 
-    abstract class Participant
+    public interface IColleague
     {
-        protected IMediator mediator;
-        public string Name { get; }
-
-        public Participant(string name)
-        {
-            Name = name;
-        }
-
-        public void SetMediator(IMediator mediator)
-        {
-            this.mediator = mediator;
-            mediator.Register(this);
-        }
-
-        public abstract void Receive(string message);
+        void SetMediator(IMediator mediator);
+        void Send(string message);
+        void Receive(string message);
     }
 
-    class Client : Participant
+    public class OrderMediator : IMediator
     {
-        public Client(string name) : base(name) { }
+        public Client Client { get; set; }
+        public Waiter Waiter { get; set; }
+        public Chef Chef { get; set; }
 
-        public void MakeOrder(string order)
+        public void Send(string message, IColleague sender)
         {
-            Console.WriteLine($"{Name} (Клієнт): Я хочу {order}");
-            mediator.Send(order, this);
-        }
-
-        public override void Receive(string message)
-        {
-            Console.WriteLine($"{Name} (Клієнт) отримує: {message}");
-        }
-    }
-
-    class Waiter : Participant
-    {
-        public Waiter(string name) : base(name) { }
-
-        public override void Receive(string message)
-        {
-            Console.WriteLine($"{Name} (Офіціант) отримує замовлення: {message}");
-            mediator.Send($"Передаю на кухню: {message}", this);
-        }
-    }
-
-    class Chef : Participant
-    {
-        public Chef(string name) : base(name) { }
-
-        public override void Receive(string message)
-        {
-            Console.WriteLine($"{Name} (Кухар) отримує: {message}");
-            Console.WriteLine($"{Name} (Кухар): Готую {message.Replace("Передаю на кухню: ", "")}");
-            mediator.Send($"Замовлення '{message.Replace("Передаю на кухню: ", "")}' готове!", this);
-        }
-    }
-
-    class OrderMediator : IMediator
-    {
-        private List<Participant> participants = new List<Participant>();
-
-        public void Register(Participant participant)
-        {
-            if (!participants.Contains(participant))
+            if (sender == Client)
             {
-                participants.Add(participant);
+                Waiter?.Receive("Client placed an order:" + message);
+                Chef?.Receive("Waiter forwards the order: " + message);
+            }
+            else if (sender == Chef)
+            {
+                Waiter?.Receive("Chef prepared the order:" + message );
+                Client?.Receive("Waiter serves the order: " + message);
             }
         }
+    }
 
-        public void Send(string message, Participant sender)
+    public class Client : IColleague
+    {
+        private IMediator mediator;
+        public void SetMediator(IMediator mediator) => this.mediator = mediator;
+
+        public void Send(string message) => mediator.Send(message, this);
+        public void Receive(string message)
         {
-            foreach (var participant in participants)
-            {
-                if (participant != sender)
-                {
-                    participant.Receive(message);
-                }
-            }
+            Console.WriteLine($"[Client] Message received: \"{message}\"");
+        }
+    }
+
+    public class Waiter : IColleague
+    {
+        private IMediator mediator;
+        public void SetMediator(IMediator mediator) => this.mediator = mediator;
+
+        public void Send(string message) => mediator.Send(message, this);
+        public void Receive(string message)
+        {
+            Console.WriteLine($"[Waiter] Message received: \"{message}\"");
+        }
+    }
+
+    public class Chef : IColleague
+    {
+        private IMediator mediator;
+        public void SetMediator(IMediator mediator) => this.mediator = mediator;
+
+        public void Send(string message) => mediator.Send(message, this);
+        public void Receive(string message)
+        {
+            Console.WriteLine($"[Chef] Message received: \"{message}\"");
         }
     }
 }

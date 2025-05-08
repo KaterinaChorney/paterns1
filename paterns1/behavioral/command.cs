@@ -58,7 +58,7 @@ namespace paterns1.behavioral
         }
     }
 
-    class Waiter
+    class Waiter_command
     {
         private List<ICommand> _orders = new List<ICommand>();
 

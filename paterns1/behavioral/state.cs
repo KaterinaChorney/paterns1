@@ -6,102 +6,104 @@ using System.Threading.Tasks;
 
 namespace paterns1.behavioral
 {
-    using System;
-    using System.Collections.Generic;
-
-    // Originator — клас, стан якого ми хочемо зберігати
-    class Order
+    class Order_state
     {
-        private List<string> _items = new List<string>();
+        private IOrderState _state;
 
-        public void AddItem(string item)
+        public Order_state()
         {
-            _items.Add(item);
-            Console.WriteLine($"Додано до замовлення: {item}");
+            SetState(new NewOrderState()); 
         }
 
-        public void ShowItems()
+        public void SetState(IOrderState state)
         {
-            Console.WriteLine("Поточне замовлення:");
-            foreach (var item in _items)
-            {
-                Console.WriteLine($"- {item}");
-            }
+            _state = state;
+            Console.WriteLine($"\n[Status changed to '{_state.GetType().Name}']");
         }
 
-        // Створює знімок
-        public OrderMemento Save()
+        public void Proceed()
         {
-            return new OrderMemento(new List<string>(_items));
+            _state.Next(this);
         }
 
-        // Відновлює стан із знімка
-        public void Restore(OrderMemento memento)
+        public void Cancel()
         {
-            _items = memento.GetItems();
-            Console.WriteLine("Замовлення відновлено.");
+            _state.Cancel(this);
         }
     }
 
-    // Memento — зберігає стан
-    class OrderMemento
+    interface IOrderState
     {
-        private readonly List<string> _items;
+        void Next(Order_state order);
+        void Cancel(Order_state order);
+    }
 
-        public OrderMemento(List<string> items)
+    class NewOrderState : IOrderState
+    {
+        public void Next(Order_state order)
         {
-            _items = items;
+            Console.WriteLine("The order has been passed on to the kitchen");
+            order.SetState(new InProgressState());
         }
 
-        public List<string> GetItems()
+        public void Cancel(Order_state order)
         {
-            return new List<string>(_items);
+            Console.WriteLine("The order has been canceled");
+            order.SetState(new CancelledState());
         }
     }
 
-    // Caretaker — зберігає знімки
-    class OrderHistory
+    class InProgressState : IOrderState
     {
-        private Stack<OrderMemento> _history = new Stack<OrderMemento>();
-
-        public void Save(Order order)
+        public void Next(Order_state order)
         {
-            _history.Push(order.Save());
+            Console.WriteLine("The order is ready");
+            order.SetState(new ReadyState());
         }
 
-        public void Undo(Order order)
+        public void Cancel(Order_state order)
         {
-            if (_history.Count > 0)
-            {
-                var memento = _history.Pop();
-                order.Restore(memento);
-            }
-            else
-            {
-                Console.WriteLine("Немає попередніх станів.");
-            }
+            Console.WriteLine("The order cannot be canceled - it is already being prepared");
         }
     }
 
-    // Тестування
-    class Program
+    class ReadyState : IOrderState
     {
-        static void Main()
+        public void Next(Order_state order)
         {
-            Order order = new Order();
-            OrderHistory history = new OrderHistory();
+            Console.WriteLine("The order has been delivered to the customer.");
+            order.SetState(new DeliveredState());
+        }
 
-            order.AddItem("Торт Наполеон");
-            order.AddItem("Круасан з мигдалем");
-            history.Save(order); // зберегли стан
-
-            order.AddItem("Тістечко Еклер");
-            order.ShowItems();
-
-            Console.WriteLine("\n— Відкат замовлення —");
-            history.Undo(order); // відновлюємо попередній стан
-            order.ShowItems();
+        public void Cancel(Order_state order)
+        {
+            Console.WriteLine("The order is ready. Cancellation is not possible.");
         }
     }
 
+    class DeliveredState : IOrderState
+    {
+        public void Next(Order_state order)
+        {
+            Console.WriteLine("Your order has already been delivered. No further action is required.");
+        }
+
+        public void Cancel(Order_state order)
+        {
+            Console.WriteLine("The order has already been delivered. It cannot be canceled");
+        }
+    }
+
+    class CancelledState : IOrderState
+    {
+        public void Next(Order_state order)
+        {
+            Console.WriteLine("Order canceled. No further action will be taken.");
+        }
+
+        public void Cancel(Order_state order)
+        {
+            Console.WriteLine("The order has already been canceled.");
+        }
+    }
 }

@@ -21,9 +21,9 @@ namespace paterns1.behavioral
     class Dessert
     {
         public string Name { get; set; }
-        public double Price { get; set; }
+        public decimal Price { get; set; }
 
-        public Dessert(string name, double price)
+        public Dessert(string name, decimal price)
         {
             Name = name;
             Price = price;

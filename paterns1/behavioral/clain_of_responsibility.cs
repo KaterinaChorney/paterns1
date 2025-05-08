@@ -21,7 +21,7 @@ namespace paterns1.behavioral
     {
         public override void HandleOrder(string order)
         {
-            if (order.Contains("tea") || order.Contains("coffee"))
+            if (order.ToLower().Contains("tea") || order.ToLower().Contains("coffee"))
             {
                 Console.WriteLine($"Waiter serves the order himself: {order}");
             }
@@ -37,7 +37,7 @@ namespace paterns1.behavioral
     {
         public override void HandleOrder(string order)
         {
-            if (order.Contains("cake") || order.Contains("eclair") || order.Contains("croissant"))
+            if (order.ToLower().Contains("cupcake") || order.ToLower().Contains("eclair") || order.ToLower().Contains("croissant"))
             {
                 Console.WriteLine($"The chef prepares the order himself: {order}");
             }
